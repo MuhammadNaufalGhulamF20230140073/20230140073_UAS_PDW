@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Daftar Modul</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="p-6 bg-gray-100 font-sans">
+
+    <h1 class="text-2xl font-bold mb-4">Daftar Modul</h1>
+
+    <!-- Tombol tambah -->
+    <a href="tambah.html" class="inline-block bg-blue-600 text-white px-4 py-2 rounded mb-4 hover:bg-blue-700 text-sm font-medium">
+    ➕ Tambah Modul
+  </a>
+
+    <!-- Tabel data -->
+    <table class="w-full bg-white shadow-md rounded overflow-hidden" id="tabel-praktikum">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="p-3 text-left">#</th>
+                <th class="p-3 text-left">Nama Modul</th>
+                <th class="p-3 text-left">File Materi</th>
+                <th class="p-3 text-left">Praktikum</th>
+                <th class="p-3 text-left">Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="tbody-praktikum">
+            <tr>
+                <td colspan="5" class="p-3">Memuat data...</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        fetch('api/data.php?rand=' + Math.random()) // force refresh cache
+            .then(res => res.json())
+            .then(data => {
+                    const tbody = document.getElementById('tbody-praktikum');
+                    tbody.innerHTML = '';
+                    data.forEach((modul, index) => {
+                                const row = `
+          <tr class="border-t">
+            <td class="p-3">${index + 1}</td>
+            <td class="p-3">${modul.nama_modul}</td>
+            <td class="p-3">
+              ${modul.file_materi 
+                ? `<a href="../../uploads/${modul.file_materi}" target="_blank" class="text-blue-600 hover:underline">Lihat</a>` 
+                : '-'}
+            </td>
+            <td class="p-3">${modul.nama_praktikum || '-'}</td>
+            <td class="p-3 space-x-2">
+              <a href="edit.html?id=${modul.id}" class="text-blue-600 hover:underline">Edit</a>
+              <a href="api/hapus.php?id=${modul.id}" onclick="return confirm('Yakin hapus?')" class="text-red-600 hover:underline">Hapus</a>
+            </td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+      })
+      .catch(err => {
+        document.getElementById('tbody-praktikum').innerHTML =
+          `<tr><td colspan="5" class="p-3 text-red-500">Gagal memuat data.</td></tr>`;
+      });
+    </script>
+
+</body>
+
+</html>

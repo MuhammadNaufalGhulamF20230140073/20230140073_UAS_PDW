@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Edit Modul</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="p-6 bg-gray-100 font-sans">
+    <h1 class="text-2xl font-bold mb-4">Edit Modul</h1>
+
+    <form action="api/edit.php" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded shadow-md w-full max-w-md">
+        <input type="hidden" name="id" id="modul-id" />
+
+        <!-- Nama Modul -->
+        <label class="block mb-2 text-sm font-medium text-gray-700">Nama Modul</label>
+        <input type="text" name="nama_modul" id="nama_modul" required class="w-full p-2 border border-gray-300 rounded mb-4" />
+
+        <!-- Dropdown Praktikum -->
+        <label class="block mb-2 text-sm font-medium text-gray-700">Pilih Praktikum</label>
+        <select name="id_praktikum" id="id_praktikum" required class="w-full p-2 border border-gray-300 rounded mb-4">
+      <option value="">-- Pilih Praktikum --</option>
+    </select>
+
+        <!-- Preview file -->
+        <div class="mb-4 text-sm text-gray-600" id="preview-file"></div>
+
+        <!-- Upload file baru -->
+        <label class="block mb-2 text-sm font-medium text-gray-700">Upload File Materi Baru (opsional)</label>
+        <input type="file" name="file_materi" accept=".pdf,.doc,.docx" class="w-full p-2 border border-gray-300 rounded mb-2" />
+        <p class="text-xs text-gray-500 mb-4">Kosongkan jika tidak ingin mengganti file.</p>
+
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Update</button>
+    </form>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get("id");
+
+        let selectedId = null;
+
+        // Langkah 1: Fetch modul
+        fetch(`api/get.php?id=${id}`)
+            .then((res) => res.json())
+            .then((modul) => {
+                // Isi input awal
+                document.getElementById("modul-id").value = modul.id;
+                document.getElementById("nama_modul").value = modul.nama_modul;
+                selectedId = modul.id_praktikum;
+
+                if (modul.file_materi) {
+                    document.getElementById("preview-file").innerHTML = `
+            File saat ini: 
+            <a href="../../uploads/${modul.file_materi}" target="_blank" class="text-blue-600 underline">
+              ${modul.file_materi}
+            </a>
+          `;
+                }
+
+                // Langkah 2: Fetch daftar praktikum
+                return fetch("../../praktikum/api/data.php");
+            })
+            .then((res) => res.json())
+            .then((praktikumList) => {
+                const select = document.getElementById("id_praktikum");
+                select.innerHTML = '<option value="">-- Pilih Praktikum --</option>'; // Kosongkan dulu
+
+                praktikumList.forEach((p) => {
+                    const selected = p.id == selectedId ? "selected" : "";
+                    select.innerHTML += `<option value="${p.id}" ${selected}>${p.nama_praktikum}</option>`;
+                });
+            })
+            .catch((err) => {
+                console.error(err);
+                alert("Gagal mengambil data modul atau praktikum.");
+            });
+    </script>
+</body>
+
+</html>

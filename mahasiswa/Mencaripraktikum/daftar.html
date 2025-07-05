@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Cari dan Daftar Praktikum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6 font-sans">
+
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800">Cari dan Daftar Mata Praktikum</h1>
+
+        <div id="praktikum-list" class="space-y-4">
+            <p>Memuat daftar praktikum...</p>
+        </div>
+    </div>
+
+    <script>
+        fetch("api/data.php")
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById("praktikum-list");
+                list.innerHTML = "";
+
+                if (data.length === 0) {
+                    list.innerHTML = "<p class='text-gray-600'>Belum ada mata praktikum tersedia.</p>";
+                    return;
+                }
+
+                data.forEach(p => {
+                    const isTerdaftar = p.terdaftar == 1;
+                    const daftarBtn = isTerdaftar ?
+                        `<span class="text-green-600 font-semibold">✔ Sudah Terdaftar</span>` :
+                        `<button onclick="daftar(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded text-sm">Daftar</button>`;
+
+                    list.innerHTML += `
+            <div class="bg-white p-4 rounded shadow">
+              <h2 class="text-lg font-semibold text-gray-800">${p.nama_praktikum}</h2>
+              <p class="text-sm text-gray-600 mb-2">${p.deskripsi}</p>
+              ${daftarBtn}
+            </div>
+          `;
+                });
+            })
+            .catch(() => {
+                document.getElementById("praktikum-list").innerHTML =
+                    "<p class='text-red-500'>Gagal memuat data praktikum.</p>";
+            });
+
+        function daftar(id) {
+            fetch("api/daftar.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "id_praktikum=" + encodeURIComponent(id)
+                })
+                .then(res => res.text())
+                .then(msg => {
+                    alert(msg);
+                    location.reload();
+                });
+        }
+    </script>
+
+</body>
+
+</html>

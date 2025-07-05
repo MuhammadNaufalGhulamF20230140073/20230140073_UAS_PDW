@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Edit Akun</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6 font-sans">
+
+    <div class="max-w-lg mx-auto bg-white rounded-xl shadow p-6">
+        <h1 class="text-2xl font-bold mb-4">Edit Akun Pengguna</h1>
+
+        <form action="api/edit.php" method="POST" id="form-edit">
+            <input type="hidden" name="id" id="user-id">
+
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Nama</label>
+                <input type="text" name="nama" id="nama" required class="w-full p-2 border rounded" />
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Email</label>
+                <input type="email" name="email" id="email" required class="w-full p-2 border rounded" />
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Password Baru (Opsional)</label>
+                <input type="password" name="password" class="w-full p-2 border rounded" />
+                <p class="text-sm text-gray-500 mt-1">Kosongkan jika tidak ingin mengganti password.</p>
+            </div>
+
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Simpan Perubahan</button>
+        </form>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        fetch(`api/get.php?id=${id}`)
+            .then(res => res.json())
+            .then(user => {
+                if (user.error) {
+                    alert("Pengguna tidak ditemukan.");
+                    return;
+                }
+                document.getElementById('user-id').value = user.id;
+                document.getElementById('nama').value = user.nama;
+                document.getElementById('email').value = user.email;
+            })
+            .catch(err => {
+                alert('Gagal mengambil data pengguna.');
+                console.error(err);
+            });
+    </script>
+
+</body>
+
+</html>

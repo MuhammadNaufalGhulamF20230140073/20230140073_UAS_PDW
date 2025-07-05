@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Beri Nilai</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6 font-sans">
+
+    <div class="max-w-lg mx-auto bg-white rounded-xl shadow p-6">
+        <h1 class="text-2xl font-bold mb-4">Beri Nilai Laporan</h1>
+
+        <form action="api/beri_nilai.php" method="POST">
+            <input type="hidden" name="id" id="laporan-id">
+
+            <div class="mb-4">
+                <label for="nilai" class="block mb-1 font-medium">Nilai (0–100)</label>
+                <input type="number" name="nilai" id="nilai" min="0" max="100" required class="w-full p-2 border rounded" />
+            </div>
+
+            <div class="mb-4">
+                <label for="feedback" class="block mb-1 font-medium">Feedback (opsional)</label>
+                <textarea name="feedback" id="feedback" rows="4" class="w-full p-2 border rounded"></textarea>
+            </div>
+
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        Simpan
+      </button>
+        </form>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        document.getElementById("laporan-id").value = id;
+
+        // Prefill nilai & feedback jika ada
+        fetch(`api/get.php?id=${id}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.nilai !== null) {
+                    document.getElementById("nilai").value = data.nilai;
+                }
+                if (data.feedback) {
+                    document.getElementById("feedback").value = data.feedback;
+                }
+            })
+            .catch(err => console.error("Gagal mengambil data:", err));
+    </script>
+
+</body>
+
+</html>

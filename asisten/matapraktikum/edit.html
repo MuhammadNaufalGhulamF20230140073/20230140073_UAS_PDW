@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Edit Mata Praktikum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6 font-sans">
+
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow p-6">
+        <h1 class="text-2xl font-bold mb-4">Edit Mata Praktikum</h1>
+
+        <form action="api/edit.php" method="POST">
+            <input type="hidden" name="id" id="praktikum-id" />
+
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Nama Praktikum</label>
+                <input type="text" name="nama_praktikum" id="nama_praktikum" required class="w-full border rounded p-2" />
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-1 font-medium">Deskripsi</label>
+                <textarea name="deskripsi" id="deskripsi" rows="4" class="w-full border rounded p-2"></textarea>
+            </div>
+
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Simpan Perubahan</button>
+        </form>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+
+        document.getElementById("praktikum-id").value = id;
+
+        fetch("api/get.php?id=" + encodeURIComponent(id))
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert("Data tidak ditemukan.");
+                } else {
+                    document.getElementById("nama_praktikum").value = data.nama_praktikum;
+                    document.getElementById("deskripsi").value = data.deskripsi || '';
+                }
+            })
+            .catch(error => {
+                console.error("Gagal memuat data:", error);
+                alert("Terjadi kesalahan saat memuat data.");
+            });
+    </script>
+
+</body>
+
+</html>
